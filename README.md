@@ -9,7 +9,7 @@ All models files already included, sorry for this:)
 
 # Evaluation
 
-`python main.py -t {TYPE_OF_NET} -i {PATH_TO_MODEL_FILE}`
+`python main.py -t {TYPE_OF_NET} -m {PATH_TO_MODEL_FILE}`
 
 # Links
 
