@@ -1,5 +1,5 @@
 # Demonstration of CORAL trained NN 
-Simple application that predict your age via your webcam
+Simple application that predict your age via your webcam based on ResNet34 trained with CORAL algorithm
 
 # Installation
 
