@@ -10,8 +10,30 @@ import models
 
 torch.backends.cudnn.deterministic = True
 
+face_cascade = cv2.CascadeClassifier('./haarcascade_frontalface_default.xml')
+
+def detect_faces(img):
+    # Convertinto grayscale since it works with grayscale images
+    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Detect the face
+    faces = face_cascade.detectMultiScale(gray_img, 1.3, 5)
+
+    if len(faces):
+        return faces[0] 
+    else:
+        return [-13, -13, -13, -13]
+
 
 def preprocess(frame):
+    (p,q,r,s) = detect_faces(frame)
+
+    # Return the whole image if it failed to detect the face
+    if p != -13: 
+        # print('Found face')
+        frame = frame[q:q+s, p:p+r]
+
+    frame = Image.fromarray(frame)
     custom_transform = transforms.Compose([transforms.Resize((128, 128)),
                                            transforms.CenterCrop((120, 120)),
                                            transforms.ToTensor()])
@@ -19,6 +41,8 @@ def preprocess(frame):
     device = torch.device('cpu')
     image = image.to(device)
     return image
+
+
 
 
 def main(num_classes, grayscale, model_path, age_offset, device):
@@ -33,8 +57,8 @@ def main(num_classes, grayscale, model_path, age_offset, device):
     with torch.no_grad():
         while True:
             ret, frame = cam.read()
-            image = Image.fromarray(frame)
-            image = preprocess(image)
+            # image = Image.fromarray(frame)
+            image = preprocess(frame)
             image = image.unsqueeze(0)
             _, probas = model(image)
             predict_levels = probas > 0.5
